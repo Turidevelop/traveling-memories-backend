@@ -1,12 +1,14 @@
 # API
-fastapi==
+fastapi==0.115.12
 
 # Database
+pyscopg2==2.9.10
+SQLAlchemy==2.0.41
 
 # Testing
-httpx==
-pytest==
+httpx==0.28.1
+pytest==8.4.1
 
 # Linting
-mypy==
-ruff==
+mypy==1.16.1
+ruff==0.12.0
