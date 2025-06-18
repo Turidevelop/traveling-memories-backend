@@ -1,0 +1,12 @@
+# API
+fastapi==
+
+# Database
+
+# Testing
+httpx==
+pytest==
+
+# Linting
+mypy==
+ruff==
