@@ -31,7 +31,7 @@ travelling-memories-backend/
 │
 ├── repositories/            # Acceso a datos
 │   ├── base.py              # Interfaz base para repositorios
-│   └── travel_repo.py       # Implementación para viajes
+│   └── example_repo.py       # Implementación para viajes
 │
 ├── api/                     # Capa de presentación
 │   ├── dependencies.py      # Dependencias inyectables

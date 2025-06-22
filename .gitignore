@@ -1,5 +1,8 @@
 # .gitignore
 .env
+.github
 venv/
 __pycache__/
 *.pyc
+
+create_roles_app.sql
