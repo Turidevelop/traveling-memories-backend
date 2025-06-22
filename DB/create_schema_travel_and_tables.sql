@@ -1,9 +1,14 @@
 -- Crear esquema si no existe
+CREATE DATABASE traveling_memories
+    OWNER administrador
+    ENCODING 'UTF8'
+    CONNECTION LIMIT -1;
+
 CREATE SCHEMA IF NOT EXISTS travel AUTHORIZATION administrador;
 
 -- Tabla de usuarios
 CREATE TABLE travel.appuser (
-     id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     avatar_url VARCHAR(255),
     bio TEXT
