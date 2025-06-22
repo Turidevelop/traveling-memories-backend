@@ -3,6 +3,7 @@
 .github
 venv/
 __pycache__/
+__init__.py
 *.pyc
 
 create_roles_app.sql
