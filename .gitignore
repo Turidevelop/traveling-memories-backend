@@ -5,5 +5,5 @@ venv/
 __pycache__/
 __init__.py
 *.pyc
-
+.vscode
 create_roles_app.sql
