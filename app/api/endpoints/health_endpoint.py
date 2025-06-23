@@ -35,14 +35,17 @@ async def health_check_async() -> dict[str, str]:
     """
     return {"status": "ok"}
 
-@router.get("/db-health", tags=["database"])
+
+@router.get("/db-health", tags=["database"], status_code=status.HTTP_200_OK)
 async def db_health_check(db: AsyncSession = Depends(get_db)) -> dict[str, str]:
     """
     Checks database connectivity by executing a simple query.
+    Returns 200 OK and a message if connected.
     """
     try:
-        await db.execute(text("select * from travel.appuser"))
-        return {"db_status": "ok"}
+        await db.execute(text("SELECT 1"))
+        return {"message": "La base de datos está conectada"}
     except Exception as e:
-        return {"db_status": "error", "detail": str(e)}
+        # Puedes cambiar el status code si quieres devolver 500 en caso de error
+        return {"message": "Error de conexión a la base de datos", "detail": str(e)}
 
