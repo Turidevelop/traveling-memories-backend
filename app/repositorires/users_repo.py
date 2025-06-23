@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
 from sqlalchemy import select
@@ -17,3 +17,9 @@ class UsersRepo:
         result = await self.db.execute(stmt)
         users = result.scalars().all()
         return users
+
+    async def get_user_by_id(self, user_id: int) -> Optional[User]:
+        stmt = select(User).where(User.id == user_id)
+        result = await self.db.execute(stmt)
+        user = result.scalars().first()
+        return user
