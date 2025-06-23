@@ -2,7 +2,7 @@
 fastapi==0.115.12
 
 # Database
-pyscopg2==2.9.10
+psycopg2==2.9.10
 SQLAlchemy==2.0.41
 pydantic==2.11.5
 pydantic-settings==2.10.0

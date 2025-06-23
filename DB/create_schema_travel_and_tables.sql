@@ -1,8 +1,4 @@
 -- Crear esquema si no existe
-CREATE DATABASE traveling_memories
-    OWNER administrador
-    ENCODING 'UTF8'
-    CONNECTION LIMIT -1;
 
 CREATE SCHEMA IF NOT EXISTS travel AUTHORIZATION administrador;
 
@@ -47,26 +43,36 @@ CREATE TABLE travel.photo (
     uploaded_at TIMESTAMP
 );
 
--- Lugares visitados
+-- Lugares visitados (NUEVA VERSIÓN NORMALIZADA)
+CREATE TABLE travel.country (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE travel.city (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    country_id INTEGER REFERENCES travel.country(id) ON DELETE CASCADE,
+    lat FLOAT,
+    lng FLOAT,
+    UNIQUE (name, country_id)
+);
+
 CREATE TABLE travel.place_visited (
     id SERIAL PRIMARY KEY,
     trip_id INTEGER REFERENCES travel.trip(id) ON DELETE CASCADE,
-    country VARCHAR(100),
-    city VARCHAR(100),
-    lat FLOAT,
-    lng FLOAT
+    country_id INTEGER REFERENCES travel.country(id) ON DELETE CASCADE,
+    city_id INTEGER REFERENCES travel.city(id) ON DELETE CASCADE
 );
 
--- Lista de deseos
+-- Lista de deseos (normalizada)
 CREATE TABLE travel.whislist (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES travel.appuser(id) ON DELETE CASCADE,
     title TEXT,
     note TEXT,
-    country VARCHAR(100),
-    city VARCHAR(100),
-    lat FLOAT,
-    lng FLOAT,
+    country_id INTEGER REFERENCES travel.country(id) ON DELETE CASCADE,
+    city_id INTEGER REFERENCES travel.city(id) ON DELETE CASCADE,
     priority INTEGER
 );
 
