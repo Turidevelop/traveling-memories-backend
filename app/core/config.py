@@ -1,15 +1,14 @@
 # core/config.py
 from pydantic_settings import BaseSettings
-from pydantic import PostgresDsn
+from pydantic import PostgresDsn, ConfigDict
 
 class Settings(BaseSettings):
     DATABASE_URL: PostgresDsn
     ENVIRONMENT: str = "development"
-    
-    class Config:
-        env_file = ".env"
-        env_file_encoding = 'utf-8'
 
-# Instancia única de configuración
+    model_config = ConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8"
+    )
+
 settings = Settings()
-
