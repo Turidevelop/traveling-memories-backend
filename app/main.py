@@ -6,8 +6,6 @@ app = FastAPI()
 
 app.include_router(users_router)
 
-
-# ...existing code...
 app.include_router(trip_router)
 
 @app.get("/")
