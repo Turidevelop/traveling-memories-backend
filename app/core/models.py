@@ -26,3 +26,12 @@ class Trip(Base):
     cover_photo_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
     summary: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[str | None] = mapped_column(TIMESTAMP, nullable=True)
+
+class PlaceVisited(Base):
+    __tablename__ = "place_visited"
+    __table_args__ = {"schema": "travel"}
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    trip_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.trip.id"), nullable=False)
+    country_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.country.id"), nullable=False)
+    city_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.city.id"), nullable=False)

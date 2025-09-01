@@ -1,8 +1,12 @@
-from app.repositorires.trip_repo import TripRepo
+from fastapi import Depends
+from app.repositories.trip_repo import TripRepo, get_trip_repo
 from app.core.schemas import TripCreate, TripOut
 
 
 class TripService:
+    """
+    Application service for Trip use cases.
+    """
     def __init__(self, repo: TripRepo):
         self.repo = repo
 
@@ -15,3 +19,11 @@ class TripService:
         if trip is None:
             return None
         return TripOut.model_validate(trip)
+
+def get_trip_service(
+    repo: TripRepo = Depends(get_trip_repo),
+) -> TripService:
+    """
+    Dependency injector for TripService.
+    """
+    return TripService(repo)

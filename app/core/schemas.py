@@ -24,3 +24,13 @@ class TripOut(TripCreate):
     created_at: datetime | None = None
 
     model_config = {"from_attributes": True}
+
+class PlaceVisitedCreate(BaseModel):
+    trip_id: int
+    country_id: int
+    city_id: int
+
+class PlaceVisitedOut(PlaceVisitedCreate):
+    id: int
+
+    model_config = {"from_attributes": True}
