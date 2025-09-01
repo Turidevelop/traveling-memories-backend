@@ -4,7 +4,7 @@ from sqlalchemy import insert, select
 from app.database import get_db
 from fastapi import Depends
 from sqlalchemy.future import select
-from sqlalchemy.exc import NoResultFound
+
 
 class TripRepo:
     def __init__(self, db: AsyncSession):
