@@ -11,7 +11,8 @@ asyncpg==0.30.0
 # Testing
 httpx==0.28.1
 pytest==8.4.1
-
+pytest-asyncio==1.0.0
+greenlet==3.2.3
 # Linting
 mypy==1.16.1
 ruff==0.12.0

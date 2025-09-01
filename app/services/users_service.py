@@ -1,7 +1,7 @@
 from typing import List, Optional
 from fastapi import Depends
 from app.core.schemas import AppUser
-from app.repositorires.users_repo import UsersRepo
+from app.repositories.users_repo import UsersRepo
 
 class UsersService:
     """

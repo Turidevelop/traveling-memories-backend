@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, Text
+from sqlalchemy import Integer, String, Text, Date, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 class Base(DeclarativeBase):
@@ -14,3 +14,24 @@ class User(Base):
     bio: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
+class Trip(Base):
+    __tablename__ = "trip"
+    __table_args__ = {"schema": "travel"}
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    start_date: Mapped[Date] = mapped_column(Date, nullable=True)
+    end_date: Mapped[Date] = mapped_column(Date, nullable=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.appuser.id"), nullable=False)
+    cover_photo_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[str | None] = mapped_column(TIMESTAMP, nullable=True)
+
+class PlaceVisited(Base):
+    __tablename__ = "place_visited"
+    __table_args__ = {"schema": "travel"}
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    trip_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.trip.id"), nullable=False)
+    country_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.country.id"), nullable=False)
+    city_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.city.id"), nullable=False)
