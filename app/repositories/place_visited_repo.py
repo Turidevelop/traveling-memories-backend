@@ -20,5 +20,8 @@ class PlaceVisitedRepo:
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
 
-def get_place_visited_repo(db: AsyncSession = Depends(get_db)) -> PlaceVisitedRepo:
+async def get_place_visited_repo(db: AsyncSession = Depends(get_db)) -> PlaceVisitedRepo:
+    """
+    Async dependency injector for PlaceVisitedRepo.
+    """
     return PlaceVisitedRepo(db)

@@ -35,3 +35,14 @@ class PlaceVisited(Base):
     trip_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.trip.id"), nullable=False)
     country_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.country.id"), nullable=False)
     city_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.city.id"), nullable=False)
+    
+
+class TripEntry(Base):
+    __tablename__ = "trip_entry"
+    __table_args__ = {"schema": "travel"}
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    trip_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.trip.id"), nullable=False)
+    entry_date: Mapped[Date] = mapped_column(Date, nullable=False)
+    title: Mapped[str] = mapped_column(String(255), nullable=False)
+    content: Mapped[str] = mapped_column(Text, nullable=False)

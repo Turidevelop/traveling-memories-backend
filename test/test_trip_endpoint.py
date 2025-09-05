@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
-from app.core.schemas import TripCreate
+
 
 @pytest.mark.asyncio
 async def test_create_trip(monkeypatch):

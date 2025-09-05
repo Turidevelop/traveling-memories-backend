@@ -34,3 +34,15 @@ class PlaceVisitedOut(PlaceVisitedCreate):
     id: int
 
     model_config = {"from_attributes": True}
+
+
+class TripEntryCreate(BaseModel):
+    trip_id: int
+    entry_date: date
+    title: str
+    content: str
+
+class TripEntryOut(TripEntryCreate):
+    id: int
+
+    model_config = {"from_attributes": True}

@@ -22,5 +22,8 @@ class TripRepo:
         trip = result.scalar_one_or_none()
         return trip
 
-def get_trip_repo(db: AsyncSession = Depends(get_db)):
+async def get_trip_repo(db: AsyncSession = Depends(get_db)) -> TripRepo:
+    """
+    Async dependency injector for TripRepo.
+    """
     return TripRepo(db)
