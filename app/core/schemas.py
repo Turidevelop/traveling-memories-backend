@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from pydantic import BaseModel
 
-class AppUser(BaseModel):
+class UserOut(BaseModel):
     id: int
     name: str
     avatar_url: str | None = None

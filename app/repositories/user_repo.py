@@ -5,7 +5,7 @@ from sqlalchemy import select
 from app.core.models import User
 from app.database import get_db
 
-class UsersRepo:
+class UserRepo:
     """
     Repository for user data access. Uses SQLAlchemy ORM for scalability and maintainability.
     """
