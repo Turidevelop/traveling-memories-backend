@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, Text, Date, ForeignKey, TIMESTAMP
+from sqlalchemy import Integer, Float, String, Text, Date, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 class Base(DeclarativeBase):
@@ -46,3 +46,23 @@ class TripEntry(Base):
     entry_date: Mapped[Date] = mapped_column(Date, nullable=False)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
+
+
+
+class City(Base):
+    __tablename__ = "city"
+    __table_args__ = {"schema": "travel"}
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    lat: Mapped[float] = mapped_column(Float, nullable=False)
+    lng: Mapped[float] = mapped_column(Float, nullable=False)
+    country_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.country.id"), nullable=False)
+
+
+class Country(Base):
+    __tablename__ = "country"
+    __table_args__ = {"schema": "travel"}
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)

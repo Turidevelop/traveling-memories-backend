@@ -46,3 +46,20 @@ class TripEntryOut(TripEntryCreate):
     id: int
 
     model_config = {"from_attributes": True}
+
+class CityCreate(BaseModel):
+    name: str
+    lat: float
+    lng: float
+    country_id: int
+
+class CityOut(CityCreate):
+    id: int
+    model_config = {"from_attributes": True}
+
+class CountryCreate(BaseModel):
+    name: str
+
+class CountryOut(CountryCreate):
+    id: int
+    model_config = {"from_attributes": True}
