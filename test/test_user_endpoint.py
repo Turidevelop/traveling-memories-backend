@@ -2,13 +2,17 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
+from app.core.config import settings
+
+API_KEY = settings.API_KEY
+HEADERS = {"X-API-KEY": API_KEY}
 
 
 @pytest.mark.asyncio
 async def test_get_users():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        response = await ac.get("/users")
+        response = await ac.get("/users", headers=HEADERS)
     assert response.status_code == 200
     data = response.json()
     assert "response" in data
@@ -22,7 +26,7 @@ async def test_get_user_by_id_found(monkeypatch):
     monkeypatch.setattr("app.services.user_service.UserService.get_user_by_id", mock_get_user_by_id)
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        response = await ac.get("/user/1")
+        response = await ac.get("/users/1", headers=HEADERS)
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == 1
@@ -36,7 +40,7 @@ async def test_get_user_by_id_not_found(monkeypatch):
     monkeypatch.setattr("app.services.user_service.UserService.get_user_by_id", mock_get_user_by_id)
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        response = await ac.get("/user/9999")
+        response = await ac.get("/users/9999", headers=HEADERS)
     assert response.status_code == 404
     data = response.json()
     assert data["detail"] == "User not found"

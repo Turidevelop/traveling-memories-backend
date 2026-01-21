@@ -2,6 +2,10 @@ import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.core.schemas import TripEntryOut
+from app.core.config import settings
+
+API_KEY = settings.API_KEY
+HEADERS = {"X-API-KEY": API_KEY}
 
 @pytest.mark.asyncio
 async def test_create_trip_entry(monkeypatch):
@@ -29,7 +33,7 @@ async def test_create_trip_entry(monkeypatch):
             "title": "Mi primer día",
             "content": "Hoy visité muchos lugares interesantes."
         }
-        response = await ac.post("/trip-entries", json=payload)
+        response = await ac.post("/trip-entries", json=payload, headers=HEADERS)
     assert response.status_code == 201
     data = response.json()
     assert data["id"] == 1

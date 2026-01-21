@@ -3,6 +3,10 @@ import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.core.schemas import CityOut
+from app.core.config import settings
+
+API_KEY = settings.API_KEY
+HEADERS = {"X-API-KEY": API_KEY}
 
 @pytest.mark.asyncio
 async def test_list_cities(monkeypatch):
@@ -18,7 +22,7 @@ async def test_list_cities(monkeypatch):
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        response = await ac.get("/cities")
+        response = await ac.get("/cities", headers=HEADERS)
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
@@ -39,7 +43,7 @@ async def test_get_city_by_id(monkeypatch):
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        response = await ac.get("/cities/1")
+        response = await ac.get("/cities/1", headers=HEADERS)
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == 1
@@ -50,7 +54,7 @@ async def test_get_city_by_id(monkeypatch):
 
     # Test city not found
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        response = await ac.get("/cities/999")
+        response = await ac.get("/cities/999", headers=HEADERS)
     assert response.status_code == 404
     data = response.json()
     assert data["detail"] == "City not found"
@@ -78,7 +82,7 @@ async def test_create_city(monkeypatch):
             "lng": -3.7038,
             "country_id": 1
         }
-        response = await ac.post("/cities", json=payload)
+        response = await ac.post("/cities", json=payload, headers=HEADERS)
     assert response.status_code == 201
     data = response.json()
     assert data["id"] == 1

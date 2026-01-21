@@ -1,14 +1,19 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from app.core.schemas import TripCreate, TripOut
 from app.services.trip_service import TripService, get_trip_service
+from app.core.security import validate_api_key
 
-router = APIRouter()
+
+router = APIRouter(
+    prefix="/trips",
+    tags=["Trips"],
+    dependencies=[Depends(validate_api_key)]
+)
 
 @router.post(
-    "/trips",
+    "",
     response_model=TripOut,
-    status_code=status.HTTP_201_CREATED,
-    tags=["trips"]
+    status_code=status.HTTP_201_CREATED
 )
 async def create_trip(
     trip: TripCreate,
@@ -20,9 +25,8 @@ async def create_trip(
     return await service.create_trip(trip)
 
 @router.get(
-    "/trips/{trip_id}",
-    response_model=TripOut,
-    tags=["trips"]
+    "/{trip_id}",
+    response_model=TripOut
 )
 async def get_trip_by_id(
     trip_id: int,

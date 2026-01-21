@@ -1,14 +1,18 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from app.core.schemas import PlaceVisitedCreate, PlaceVisitedOut
 from app.services.place_visited_service import PlaceVisitedService, get_place_visited_service
+from app.core.security import validate_api_key
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/places-visited",
+    tags=["Places Visited"],
+    dependencies=[Depends(validate_api_key)]
+)
 
 @router.post(
-    "/places-visited",
+    "",
     response_model=PlaceVisitedOut,
-    status_code=status.HTTP_201_CREATED,
-    tags=["places_visited"]
+    status_code=status.HTTP_201_CREATED
 )
 async def create_place_visited(
     data: PlaceVisitedCreate,
@@ -20,9 +24,8 @@ async def create_place_visited(
     return await service.create_place_visited(data)
 
 @router.get(
-    "/places-visited/{place_visited_id}",
-    response_model=PlaceVisitedOut,
-    tags=["places_visited"]
+    "/{place_visited_id}",
+    response_model=PlaceVisitedOut
 )
 async def get_place_visited_by_id(
     place_visited_id: int,

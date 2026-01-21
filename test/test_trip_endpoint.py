@@ -1,6 +1,10 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
+from app.core.config import settings
+
+API_KEY = settings.API_KEY
+HEADERS = {"X-API-KEY": API_KEY}
 
 
 @pytest.mark.asyncio
@@ -29,7 +33,7 @@ async def test_create_trip(monkeypatch):
     }
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        response = await ac.post("/trips", json=trip_data)
+        response = await ac.post("/trips", json=trip_data, headers=HEADERS)
     assert response.status_code == 201
     data = response.json()
     assert data["title"] == trip_data["title"]
@@ -57,7 +61,7 @@ async def test_get_trip_by_id_found(monkeypatch):
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        response = await ac.get("/trips/1")
+        response = await ac.get("/trips/1", headers=HEADERS)
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == 1
@@ -72,7 +76,7 @@ async def test_get_trip_by_id_not_found(monkeypatch):
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        response = await ac.get("/trips/9999")
+        response = await ac.get("/trips/9999", headers=HEADERS)
     assert response.status_code == 404
     data = response.json()
     assert data["detail"] == "Trip not found"

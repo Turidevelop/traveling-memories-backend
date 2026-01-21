@@ -2,14 +2,18 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from app.core.schemas import CityCreate, CityOut
 from app.services.city_service import CityService, get_city_service
 from typing import List
+from app.core.security import validate_api_key
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/cities",
+    tags=["Cities"],
+    dependencies=[Depends(validate_api_key)]
+)
 
 @router.post(
-    "/cities",
+    "",
     response_model=CityOut,
-    status_code=status.HTTP_201_CREATED,
-    tags=["cities"]
+    status_code=status.HTTP_201_CREATED
 )
 async def create_city(
     data: CityCreate,
@@ -21,9 +25,8 @@ async def create_city(
     return await service.create_city(data)
 
 @router.get(
-    "/cities",
-    response_model=List[CityOut],
-    tags=["cities"]
+    "",
+    response_model=List[CityOut]
 )
 async def list_cities(
     service: CityService = Depends(get_city_service)
@@ -34,9 +37,8 @@ async def list_cities(
     return await service.get_all_cities()
 
 @router.get(
-    "/cities/{city_id}",
-    response_model=CityOut,
-    tags=["cities"]
+    "/{city_id}",
+    response_model=CityOut
 )
 async def get_city_by_id(
     city_id: int,

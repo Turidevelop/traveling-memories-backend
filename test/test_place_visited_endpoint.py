@@ -2,6 +2,10 @@ import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.core.schemas import PlaceVisitedOut
+from app.core.config import settings
+
+API_KEY = settings.API_KEY
+HEADERS = {"X-API-KEY": API_KEY}
 
 @pytest.mark.asyncio
 async def test_create_place_visited(monkeypatch):
@@ -27,7 +31,7 @@ async def test_create_place_visited(monkeypatch):
             "country_id": 2,
             "city_id": 3
         }
-        response = await ac.post("/places-visited", json=payload)
+        response = await ac.post("/places-visited", json=payload, headers=HEADERS)
     assert response.status_code == 201
     data = response.json()
     assert data["id"] == 1

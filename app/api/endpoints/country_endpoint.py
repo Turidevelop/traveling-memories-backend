@@ -3,14 +3,18 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from app.core.schemas import CountryCreate, CountryOut
 from app.services.country_service import CountryService, get_country_service
 from typing import List
+from app.core.security import validate_api_key
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/countries",
+    tags=["Countries"],
+    dependencies=[Depends(validate_api_key)]
+)
 
 @router.post(
-    "/countries",
+    "",
     response_model=CountryOut,
-    status_code=status.HTTP_201_CREATED,
-    tags=["countries"]
+    status_code=status.HTTP_201_CREATED
 )
 async def create_country(
     data: CountryCreate,
@@ -22,9 +26,8 @@ async def create_country(
     return await service.create_country(data)
 
 @router.get(
-    "/countries",
-    response_model=List[CountryOut],
-    tags=["countries"]
+    "",
+    response_model=List[CountryOut]
 )
 async def list_countries(
     service: CountryService = Depends(get_country_service)
@@ -35,9 +38,8 @@ async def list_countries(
     return await service.get_all_countries()
 
 @router.get(
-    "/countries/{country_id}",
-    response_model=CountryOut,
-    tags=["countries"]
+    "/{country_id}",
+    response_model=CountryOut
 )
 async def get_country_by_id(
     country_id: int,
