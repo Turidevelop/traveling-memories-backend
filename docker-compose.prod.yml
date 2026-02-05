@@ -1,0 +1,83 @@
+# Docker Compose para PRODUCCIÓN
+# Ejecutar con: docker-compose -f docker-compose.prod.yml up -d
+
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: traveling-memories-db-prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-travel_db}
+      # Optimizaciones de rendimiento para producción
+      POSTGRES_INITDB_ARGS: "-c shared_buffers=1GB -c max_connections=500 -c effective_cache_size=3GB"
+    ports:
+      - "127.0.0.1:${DB_PORT:-5432}:5432"  # Solo acceso local
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+      - ./DB:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-travel_db}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - traveling-network-prod
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: traveling-memories-api:latest
+    container_name: traveling-memories-api-prod
+    restart: always
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER:-postgres}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-travel_db}
+      API_KEY: ${API_KEY}
+      ENVIRONMENT: production
+    ports:
+      - "127.0.0.1:${API_PORT:-8000}:8000"  # Solo acceso local (usar reverse proxy)
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - traveling-network-prod
+    security_opt:
+      - no-new-privileges:true
+    read_only_root_filesystem: true
+    tmpfs:
+      - /tmp
+      - /var/tmp
+    command: >
+      uvicorn app.main:app
+      --host 0.0.0.0
+      --port 8000
+      --workers 4
+      --no-access-log
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  postgres_data_prod:
+    driver: local
+
+networks:
+  traveling-network-prod:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16

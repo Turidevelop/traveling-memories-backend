@@ -1,102 +1,467 @@
-# traveling-memories-backend
+# Traveling Memories Backend
 
-> 🧱 Plantilla base para el proyecto en Python — minimalista, adaptable y extensible.
+> Una API REST moderna y completamente tipada para gestionar viajes y sus memorias, construida con FastAPI, SQLAlchemy y PostgreSQL.
 
 ## 📌 Descripción
 
-`traveling-memories-backend` es un proyecto desarrollado en Python. Su propósito es servir como punto de partida común para crear una API con una base limpia y bien organizada.
+**Traveling Memories Backend** es una aplicación web que proporciona una API REST para registrar, organizar y consultar información sobre viajes, lugares visitados y entradas de diario. Está diseñada siguiendo los principios de **Clean Architecture** para garantizar código mantenible, testeable y escalable.
 
-Un punto de partida común y personalizable para el desarrollo Python.
+### Características principales
+
+- ✅ **API REST completamente funcional** con endpoints CRUD
+- ✅ **Arquitectura limpia** con separación de capas (core, services, repositories, api)
+- ✅ **Tipado estricto** en Python con type hints y Pydantic
+- ✅ **Async/await** para operaciones no bloqueantes
+- ✅ **Autenticación** mediante API Key
+- ✅ **Base de datos PostgreSQL** con esquema bien estructurado
+- ✅ **Tests automatizados** con pytest
+- ✅ **Docker y Docker Compose** para despliegue
+- ✅ **Gestión de entidades relacionadas**: Usuarios, Viajes, Ciudades, Países, Lugares Visitados, Entradas de Diario
 
 ---
 
 ## 📁 Estructura del proyecto
 
-```bash
+```
 traveling-memories-backend/
-├── .env                         # Variables de entorno
-├── .gitignore                   # Archivos ignorados por Git
+├── docker-compose.yml           # Configuración de servicios (API + PostgreSQL)
+├── Dockerfile                   # Imagen Docker de la aplicación
+├── DOCKER.md                    # Guía detallada para despliegue con Docker
 ├── requirements.txt             # Dependencias de Python
-├── README.md                    # Documentación principal del proyecto
-├── main.py                      # Punto de entrada de la aplicación FastAPI
-├── database.py                  # Configuración y conexión a la base de datos
+├── .env.example                 # Template de variables de entorno
+├── README.md                    # Este archivo
 │
-├── core/                        # Lógica de negocio central y modelos de dominio
-│   ├── config.py                # Configuración de la aplicación
-│   ├── models.py                # Modelos de dominio (SQLAlchemy)
-│   └── schemas.py               # Esquemas de datos (Pydantic)
+├── app/
+│   ├── main.py                  # Punto de entrada de FastAPI
+│   ├── database.py              # Configuración y sesiones async de SQLAlchemy
+│   │
+│   ├── core/                    # Capa de lógica de negocio central (framework-agnostic)
+│   │   ├── config.py            # Configuración de la aplicación y variables de entorno
+│   │   ├── models.py            # Modelos de dominio SQLAlchemy
+│   │   ├── schemas.py           # Esquemas Pydantic para validación de requests/responses
+│   │   └── security.py          # Funciones de seguridad (validación de API Key, etc.)
+│   │
+│   ├── repositories/            # Capa de acceso a datos (Data Access Layer)
+│   │   ├── user_repo.py         # Repositorio de usuarios
+│   │   ├── trip_repo.py         # Repositorio de viajes
+│   │   ├── place_visited_repo.py# Repositorio de lugares visitados
+│   │   ├── trip_entry_repo.py   # Repositorio de entradas de diario
+│   │   ├── city_repo.py         # Repositorio de ciudades
+│   │   └── country_repo.py      # Repositorio de países
+│   │
+│   ├── services/                # Capa de casos de uso (Use Case Layer)
+│   │   ├── user_service.py      # Lógica de negocio de usuarios
+│   │   ├── trip_service.py      # Lógica de negocio de viajes
+│   │   ├── place_visited_service.py
+│   │   ├── trip_entry_service.py
+│   │   ├── city_service.py
+│   │   └── country_service.py
+│   │
+│   ├── api/                     # Capa de presentación (API Layer)
+│   │   ├── dependencies.py      # Inyección de dependencias
+│   │   └── endpoints/           # Rutas REST
+│   │       ├── user_endpoint.py
+│   │       ├── trip_endpoint.py
+│   │       ├── place_visited_endpoint.py
+│   │       ├── trip_entry_endpoint.py
+│   │       ├── city_endpoint.py
+│   │       └── country_endpoint.py
+│   │
+│   └── __init__.py
 │
-├── services/                    # Casos de uso y lógica de aplicación
-│   ├── user_service.py
-│   ├── trip_service.py
-│   └── place_visited_service.py
-│
-├── repositories/                # Acceso a datos y persistencia
-│   ├── base.py                  # Interfaz base para repositorios
-│   ├── user_repo.py
-│   ├── trip_repo.py
-│   └── place_visited_repo.py
-│
-├── api/                         # Capa de presentación (API)
-│   └── endpoints/               # Endpoints de la API REST
-│       ├── user_endpoint.py
-│       ├── trip_endpoint.py
-│       └── place_visited_endpoint.py
-│
-├── test/                        # Tests automatizados
+├── test/                        # Pruebas automatizadas
 │   ├── test_user_endpoint.py
 │   ├── test_trip_endpoint.py
-│   └── test_place_visited_endpoint.py
+│   ├── test_place_visited_endpoint.py
+│   ├── test_trip_entry_endpoint.py
+│   ├── test_city_endpoint.py
+│   ├── test_country_endpoint.py
+│   └── __init__.py
 │
-└── DB/
-    └── create_schema_travel_and_tables.sql   # Script de creación de esquema y tablas
+└── DB/                          # Scripts SQL
+    ├── create_roles_app.sql     # Creación de roles PostgreSQL
+    ├── create_schema_travel_and_tables.sql  # Creación de esquema y tablas
+    ├── insert_countries.sql     # Datos iniciales de países
+    ├── insert_into_appuser.sql  # Datos iniciales de usuarios
+    └── travel_db.session.sql    # Configuración de sesión
 ```
 
 ---
 
-## 🛠️ Tecnologías y herramientas
+## 🛠️ Tecnologías
 
-- **Python** (tipado)
-- **FastAPI** (API REST)
-- **SQLAlchemy** (ORM)
-- **Pydantic** (validación de datos)
-- **PostgreSQL** (base de datos)
-- **pytest** (testing)
-
----
-
-## 🧩 Principios de arquitectura
-
-- **Clean Architecture**: Separación clara de capas (core, services, repositories, api).
-- **Tipado estricto**: Uso de type hints y Pydantic en todo el proyecto.
-- **Inyección de dependencias**: Uso de `Depends` de FastAPI para desacoplar componentes.
-- **Async I/O**: Operaciones asíncronas en API y acceso a datos.
+| Categoría | Herramientas |
+|-----------|-------------|
+| **Framework API** | [FastAPI](https://fastapi.tiangolo.com/) 0.115+ |
+| **ORM & Database** | [SQLAlchemy](https://www.sqlalchemy.org/) 2.0+, [PostgreSQL](https://www.postgresql.org/) |
+| **Async Driver** | [asyncpg](https://magicstack.github.io/asyncpg/) 0.30+ |
+| **Validación** | [Pydantic](https://docs.pydantic.dev/) 2.11+, [pydantic-settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/) |
+| **Testing** | [pytest](https://pytest.org/) 8.4+, [pytest-asyncio](https://github.com/pytest-dev/pytest-asyncio), [httpx](https://www.python-httpx.org/) |
+| **Linting & Type Checking** | [mypy](https://www.mypy-lang.org/), [ruff](https://github.com/astral-sh/ruff) |
+| **Utilities** | [python-dotenv](https://github.com/theskumar/python-dotenv), [uvicorn](https://www.uvicorn.org/) |
+| **Database Driver** | [psycopg2](https://www.psycopg.org/) |
 
 ---
 
-## 🚀 Cómo empezar
+## 🏗️ Arquitectura
 
-1. Instala las dependencias:
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. Configura tu archivo `.env` con las variables necesarias.
-3. Ejecuta la aplicación:
-   ```bash
-   uvicorn main:app --reload
-   ```
-4. Ejecuta los tests:
-   ```bash
-   pytest
-   ```
+El proyecto sigue **Clean Architecture** con una separación clara de responsabilidades:
+
+### Capas
+
+```
+┌─────────────────────────────────────────┐
+│         API Layer (Presentation)        │
+│  endpoints/ (FastAPI Routes + Schemas)  │
+└──────────────────┬──────────────────────┘
+                   ↓
+┌──────────────────────────────────────────┐
+│      Services Layer (Use Cases)          │
+│   Business logic & workflows             │
+└──────────────────┬───────────────────────┘
+                   ↓
+┌──────────────────────────────────────────┐
+│   Repositories Layer (Data Access)       │
+│   Database queries & persistence         │
+└──────────────────┬───────────────────────┘
+                   ↓
+┌──────────────────────────────────────────┐
+│    Core Layer (Domain & Config)          │
+│  Models, schemas, configuration          │
+└──────────────────────────────────────────┘
+```
+
+### Ventajas
+
+- **Independencia de framework**: La lógica de negocio no depende de FastAPI
+- **Testabilidad**: Fácil inyectar mocks en tests
+- **Escalabilidad**: Agregar nuevas funcionalidades sin afectar código existente
+- **Mantenibilidad**: Código organizado y con responsabilidades claras
 
 ---
 
-## 📚 Documentación adicional
+## 🔑 Conceptos clave
 
-- Consulta los archivos en la carpeta `core/` para ver los modelos y esquemas.
-- Los endpoints están en `api/endpoints/`.
-- Los servicios y repositorios siguen los principios de Clean Architecture.
+### 1. **Type Hints & Pydantic**
+
+Toda la aplicación usa type hints de Python. Los esquemas de entrada/salida se validan con Pydantic:
+
+```python
+# En schemas.py
+class UserOut(BaseModel):
+    id: int
+    name: str
+    avatar_url: str | None = None
+    bio: str | None = None
+
+# En endpoints
+@router.get("/{user_id}", response_model=UserOut)
+async def get_user(user_id: int, service: UserService = Depends()) -> UserOut:
+    ...
+```
+
+### 2. **Async/Await**
+
+Todas las operaciones de I/O (base de datos, API) son asincrónicas:
+
+```python
+async def get_all_users(self) -> List[User]:
+    result = await session.execute(select(User))
+    return result.scalars().all()
+```
+
+### 3. **Inyección de Dependencias**
+
+FastAPI maneja automáticamente la inyección de dependencias:
+
+```python
+@router.get("/trips")
+async def get_trips(
+    service: TripService = Depends(),
+    db: AsyncSession = Depends(get_db)
+):
+    ...
+```
+
+### 4. **Autenticación**
+
+Se valida mediante API Key en los endpoints:
+
+```python
+@router.get("/users", dependencies=[Depends(validate_api_key)])
+async def get_users(...):
+    ...
+```
+
+---
+
+## 🚀 Inicio rápido
+
+### Requisitos previos
+
+- Python 3.9+
+- PostgreSQL 12+
+- Docker & Docker Compose (opcional, recomendado)
+
+### 1. Clonar y preparar el entorno
+
+```bash
+# Clonar repositorio
+git clone <repository-url>
+cd traveling-memories-backend
+
+# Crear entorno virtual
+python -m venv venv
+source venv/bin/activate  # En Windows: venv\Scripts\activate
+
+# Instalar dependencias
+pip install -r requirements.txt
+```
+
+### 2. Configurar variables de entorno
+
+```bash
+# Crear archivo .env basado en el template
+cp .env.example .env
+
+# Editar .env con tus valores:
+# DATABASE_URL=postgresql+asyncpg://usuario:password@localhost:5432/name_db
+# ENVIRONMENT=development
+# API_KEY=tu-clave-secreta-aqui
+```
+
+### 3. Inicializar la base de datos
+
+```bash
+# Conectarse a PostgreSQL y ejecutar scripts SQL
+psql -U postgres -f DB/create_roles_app.sql
+psql -U postgres -f DB/create_schema_travel_and_tables.sql
+psql -U postgres -f DB/insert_countries.sql
+```
+
+### 4. Ejecutar la aplicación
+
+```bash
+# Desarrollo (con hot-reload)
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+# La API estará disponible en http://localhost:8000
+# Documentación interactiva: http://localhost:8000/docs
+```
+
+---
+
+## 🐳 Con Docker Compose (Recomendado)
+
+La forma más rápida de ejecutar la aplicación con PostgreSQL:
+
+```bash
+# Construir e iniciar servicios
+docker-compose up -d
+
+# Ver logs
+docker-compose logs -f app
+
+# Detener
+docker-compose down
+```
+
+Para más detalles, consulta [DOCKER.md](DOCKER.md).
+
+---
+
+## 📚 Guía de uso de la API
+
+### Autenticación
+
+Todos los endpoints requieren el header `X-API-Key`:
+
+```bash
+curl -H "X-API-Key: tu-api-key" http://localhost:8000/users
+```
+
+### Ejemplos de endpoints
+
+#### Viajes
+
+```bash
+# Listar viajes
+GET /trips
+
+# Obtener viaje por ID
+GET /trips/{id}
+
+# Crear viaje
+POST /trips
+Body: { "title": "Viaje a Europa", "start_date": "2024-01-01", "end_date": "2024-01-31", "user_id": 1, ... }
+```
+
+#### Ciudades y Países
+
+```bash
+# Listar países
+GET /countries
+
+# Listar ciudades
+GET /cities
+
+# Listar ciudades de un país
+GET /cities?country_id=1
+```
+
+Para ver la documentación interactiva completa, accede a `/docs` en tu navegador.
+
+---
+
+## 🧪 Testing
+
+```bash
+# Ejecutar todos los tests
+pytest
+
+# Con cobertura de código
+pytest --cov=app
+
+# Tests de un módulo específico
+pytest test/test_user_endpoint.py
+
+# Con output detallado
+pytest -v
+```
+
+---
+
+## 🔧 Convenciones de código
+
+### Naming
+
+- **Servicios**: `*_service.py` (ej: `user_service.py`)
+- **Repositorios**: `*_repo.py` (ej: `user_repo.py`)
+- **Endpoints**: `*_endpoint.py` (ej: `user_endpoint.py`)
+
+### Patrones
+
+- **Modelos**: Se definen en `core/models.py` usando SQLAlchemy
+- **Esquemas**: Se definen en `core/schemas.py` usando Pydantic
+- **Rutas**: Se crean con `APIRouter` en `api/endpoints/`
+
+### Type Hints
+
+Siempre usa type hints. Ejemplos:
+
+```python
+def get_users() -> List[UserOut]:
+    ...
+
+async def create_user(user: UserCreate) -> UserOut:
+    ...
+
+def calculate_duration(start: date, end: date) -> int:
+    ...
+```
+
+---
+
+## 📊 Modelo de datos
+
+### Entidades principales
+
+```
+User (Usuario)
+├── id: int (PK)
+├── name: str
+├── avatar_url: str | null
+└── bio: str | null
+
+Trip (Viaje)
+├── id: int (PK)
+├── title: str
+├── start_date: date
+├── end_date: date
+├── user_id: int (FK → User)
+├── cover_photo_url: str | null
+├── summary: str | null
+└── created_at: timestamp
+
+City (Ciudad)
+├── id: int (PK)
+├── name: str
+├── lat: float
+├── lng: float
+└── country_id: int (FK → Country)
+
+Country (País)
+├── id: int (PK)
+└── name: str (unique)
+
+PlaceVisited (Lugar Visitado)
+├── id: int (PK)
+├── trip_id: int (FK → Trip)
+├── country_id: int (FK → Country)
+└── city_id: int (FK → City)
+
+TripEntry (Entrada de Diario)
+├── id: int (PK)
+├── trip_id: int (FK → Trip)
+├── entry_date: date
+├── title: str
+└── content: text
+```
+
+---
+
+## 🛠️ Variables de entorno
+
+```env
+# Base de datos
+DATABASE_URL=postgresql+asyncpg://usuario:password@localhost:5432/name_db
+
+# Configuración
+ENVIRONMENT=development          # development | production
+API_KEY=tu-clave-secreta-aqui
+
+# Opcional
+LOG_LEVEL=info
+DEBUG=true
+```
+
+---
+
+## 📖 Recursos útiles
+
+- [FastAPI Documentation](https://fastapi.tiangolo.com/)
+- [SQLAlchemy ORM](https://docs.sqlalchemy.org/en/20/orm/)
+- [Pydantic v2](https://docs.pydantic.dev/)
+- [asyncpg](https://magicstack.github.io/asyncpg/)
+- [pytest Documentation](https://docs.pytest.org/)
+
+---
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+2. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+3. Push a la rama (`git push origin feature/AmazingFeature`)
+4. Abre un Pull Request
+
+---
+
+## 📝 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver LICENSE para más detalles.
+
+---
+
+## 📧 Contacto
+
+Para preguntas o sugerencias, abre un issue en el repositorio.
+
+---
+
+**Última actualización**: Febrero 2026  
+**Versión**: 1.0.0
 
 ---
 
