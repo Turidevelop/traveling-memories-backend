@@ -4,10 +4,15 @@ services:
     container_name: traveling-memories-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_USER: ${DB_ADMIN_USER}
+      POSTGRES_PASSWORD: ${DB_ADMIN_PASSWORD}
       POSTGRES_DB: ${DB_NAME:-travel_db}
-      # Optimizaciones de rendimiento para desarrollo
+      DB_ADMIN_USER: ${DB_ADMIN_USER}
+      DB_ADMIN_PASSWORD: ${DB_ADMIN_PASSWORD}
+      DB_APP_USER: ${DB_APP_USER:-app_user}
+      DB_APP_PASSWORD: ${DB_APP_PASSWORD}
+      # PostgreSQL settings
+      PGPASSFILE: /dev/null
       POSTGRES_INITDB_ARGS: "-c shared_buffers=256MB -c max_connections=200"
     ports:
       - "${DB_PORT:-5432}:5432"
@@ -15,7 +20,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./DB:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-travel_db}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_ADMIN_USER} -d ${DB_NAME:-travel_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,7 +40,11 @@ services:
     container_name: traveling-memories-api
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql+asyncpg://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-travel_db}
+      DATABASE_URL: postgresql+asyncpg://${DB_APP_USER:-app_user}:${DB_APP_PASSWORD}@postgres:5432/${DB_NAME:-travel_db}
+      DB_ADMIN_USER: ${DB_ADMIN_USER}
+      DB_ADMIN_PASSWORD: ${DB_ADMIN_PASSWORD}
+      DB_APP_USER: ${DB_APP_USER:-app_user}
+      DB_APP_PASSWORD: ${DB_APP_PASSWORD}
       API_KEY: ${API_KEY:-your-api-key-here}
       ENVIRONMENT: ${ENVIRONMENT:-development}
     ports:

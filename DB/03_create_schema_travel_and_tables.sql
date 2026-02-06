@@ -1,4 +1,12 @@
--- Crear esquema si no existe
+-- ============================================
+-- CREAR ESQUEMA Y TABLAS
+-- ============================================
+-- El esquema se crea con AUTHORIZATION administrador
+-- Esto significa que administrador es el propietario
+-- Las tablas también son propiedad de administrador
+
+-- Conectar como administrador para crear el esquema
+SET ROLE administrador;
 
 CREATE SCHEMA IF NOT EXISTS travel AUTHORIZATION administrador;
 
