@@ -9,7 +9,7 @@ services:
       POSTGRES_DB: ${DB_NAME:-travel_db}
       DB_ADMIN_USER: ${DB_ADMIN_USER}
       DB_ADMIN_PASSWORD: ${DB_ADMIN_PASSWORD}
-      DB_APP_USER: ${DB_APP_USER:-app_user}
+      DB_APP_USER: ${DB_APP_USER}
       DB_APP_PASSWORD: ${DB_APP_PASSWORD}
       # PostgreSQL settings
       PGPASSFILE: /dev/null
@@ -40,10 +40,10 @@ services:
     container_name: traveling-memories-api
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql+asyncpg://${DB_APP_USER:-app_user}:${DB_APP_PASSWORD}@postgres:5432/${DB_NAME:-travel_db}
+      DATABASE_URL: postgresql+asyncpg://${DB_APP_USER}:${DB_APP_PASSWORD}@postgres:5432/${DB_NAME:-travel_db}
       DB_ADMIN_USER: ${DB_ADMIN_USER}
       DB_ADMIN_PASSWORD: ${DB_ADMIN_PASSWORD}
-      DB_APP_USER: ${DB_APP_USER:-app_user}
+      DB_APP_USER: ${DB_APP_USER}
       DB_APP_PASSWORD: ${DB_APP_PASSWORD}
       API_KEY: ${API_KEY:-your-api-key-here}
       ENVIRONMENT: ${ENVIRONMENT:-development}
