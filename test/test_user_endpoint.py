@@ -9,7 +9,14 @@ HEADERS = {"X-API-KEY": API_KEY}
 
 
 @pytest.mark.asyncio
-async def test_get_users():
+async def test_get_users(monkeypatch):
+    async def mock_list_users(self):
+        from app.core.schemas import UserOut
+        return [
+            UserOut(id=1, name="Test User 1", avatar_url=None, bio=None),
+            UserOut(id=2, name="Test User 2", avatar_url=None, bio=None)
+        ]
+    monkeypatch.setattr("app.services.user_service.UserService.list_users", mock_list_users)
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         response = await ac.get("/users", headers=HEADERS)
@@ -17,6 +24,7 @@ async def test_get_users():
     data = response.json()
     assert "response" in data
     assert isinstance(data["response"], list)
+    assert len(data["response"]) == 2
 
 
 @pytest.mark.asyncio
