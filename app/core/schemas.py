@@ -18,6 +18,7 @@ class TripCreate(BaseModel):
     user_id: int
     cover_photo_url: str | None = None
     summary: str | None = None
+    is_wishlist: bool = False
 
 class TripOut(TripCreate):
     id: int

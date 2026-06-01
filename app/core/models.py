@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, Float, String, Text, Date, ForeignKey, TIMESTAMP
+from sqlalchemy import Integer, Float, String, Text, Date, ForeignKey, TIMESTAMP, Boolean
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 class Base(DeclarativeBase):
@@ -25,6 +25,7 @@ class Trip(Base):
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.appuser.id"), nullable=False)
     cover_photo_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
     summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    is_wishlist: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[str | None] = mapped_column(TIMESTAMP, nullable=True)
 
 class TripEntry(Base):

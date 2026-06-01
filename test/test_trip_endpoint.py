@@ -19,6 +19,7 @@ async def test_create_trip(monkeypatch):
             "user_id": trip.user_id,
             "cover_photo_url": trip.cover_photo_url,
             "summary": trip.summary,
+            "is_wishlist": trip.is_wishlist,
             "created_at": None
         }
     monkeypatch.setattr("app.services.trip_service.TripService.create_trip", mock_create_trip)
@@ -29,16 +30,18 @@ async def test_create_trip(monkeypatch):
         "end_date": "2025-08-30",
         "user_id": 1,
         "cover_photo_url": "http://example.com/foto.jpg",
-        "summary": "Un viaje de prueba."
+        "summary": "Un viaje de prueba.",
+        "is_wishlist": False
     }
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         response = await ac.post("/trips", json=trip_data, headers=HEADERS)
     assert response.status_code == 201
     data = response.json()
+    assert "id" in data, "Response debe incluir el trip_id"
+    assert data["id"] == 1
     assert data["title"] == trip_data["title"]
     assert data["user_id"] == trip_data["user_id"]
-
     assert data["summary"] == trip_data["summary"]
 
 
@@ -55,6 +58,7 @@ async def test_get_trip_by_id_found(monkeypatch):
             user_id=1,
             cover_photo_url="http://example.com/foto.jpg",
             summary="Un viaje de prueba.",
+            is_wishlist=False,
             created_at=None
         )
     monkeypatch.setattr("app.services.trip_service.TripService.get_trip_by_id", mock_get_trip_by_id)

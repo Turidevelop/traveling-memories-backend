@@ -27,6 +27,7 @@ CREATE TABLE travel.trip (
     user_id INTEGER REFERENCES travel.appuser(id) ON DELETE CASCADE,
     cover_photo_url VARCHAR(255),
     summary TEXT,
+    is_wishlist BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP
 );
 
