@@ -25,17 +25,6 @@ class TripOut(TripCreate):
 
     model_config = {"from_attributes": True}
 
-class PlaceVisitedCreate(BaseModel):
-    trip_id: int
-    country_id: int
-    city_id: int
-
-class PlaceVisitedOut(PlaceVisitedCreate):
-    id: int
-
-    model_config = {"from_attributes": True}
-
-
 class TripEntryCreate(BaseModel):
     trip_id: int
     entry_date: date
