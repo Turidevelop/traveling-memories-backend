@@ -200,10 +200,29 @@ async def get_users(...):
 ### Requisitos previos
 
 - Python 3.9+
-- PostgreSQL 12+
-- Docker & Docker Compose (opcional, recomendado)
+- PostgreSQL 12+ (local o Neon)
+- Docker & Docker Compose (opcional)
 
-### 1. Clonar y preparar el entorno
+---
+
+### Opción A: Con Docker Compose (Recomendado para desarrollo)
+
+```bash
+# Clonar repositorio
+git clone <repository-url>
+cd traveling-memories-backend
+
+# Iniciar servicios (API + PostgreSQL)
+docker-compose up -d
+
+# La API estará disponible en http://localhost:8000/docs
+```
+
+---
+
+### Opción B: Sin Docker (Local)
+
+**1. Clonar y preparar el entorno**
 
 ```bash
 # Clonar repositorio
@@ -218,28 +237,27 @@ source venv/bin/activate  # En Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 2. Configurar variables de entorno
+**2. Configurar variables de entorno**
 
 ```bash
 # Crear archivo .env basado en el template
 cp .env.example .env
 
-# Editar .env con tus valores:
-# DATABASE_URL=postgresql+asyncpg://usuario:password@localhost:5432/name_db
-# ENVIRONMENT=development
-# API_KEY=tu-clave-secreta-aqui
+# Editar .env con tus valores de BD local
 ```
 
-### 3. Inicializar la base de datos
+**3. Inicializar la base de datos**
 
 ```bash
-# Conectarse a PostgreSQL y ejecutar scripts SQL
-psql -U postgres -f DB/create_roles_app.sql
-psql -U postgres -f DB/create_schema_travel_and_tables.sql
-psql -U postgres -f DB/insert_countries.sql
+# Ejecutar scripts SQL en PostgreSQL
+psql -U postgres -f DB/00_init.sh
+psql -U postgres -f DB/02_grant_permissions.sql
+psql -U postgres -f DB/03_create_schema_travel_and_tables.sql
+psql -U postgres -f DB/04_insert_countries.sql
+psql -U postgres -f DB/05_insert_into_appuser.sql
 ```
 
-### 4. Ejecutar la aplicación
+**4. Ejecutar la aplicación**
 
 ```bash
 # Desarrollo (con hot-reload)
@@ -251,22 +269,63 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ---
 
-## 🐳 Con Docker Compose (Recomendado)
+### Opción C: Producción (Render/Railway)
 
-La forma más rápida de ejecutar la aplicación con PostgreSQL:
+**Prerequisitos:**
+- Cuenta en [Neon](https://neon.tech/) o [Supabase](https://supabase.com/) para BD PostgreSQL
+- Cuenta en [Render](https://render.com/) o [Railway](https://railway.app/)
 
-```bash
-# Construir e iniciar servicios
-docker-compose up -d
+**Pasos:**
 
-# Ver logs
-docker-compose logs -f app
+1. **Crear base de datos en Neon:**
+   - Crear nuevo proyecto
+   - Copiar `DATABASE_URL`
+   - Ejecutar scripts SQL en la consola de Neon
 
-# Detener
-docker-compose down
+2. **Conectar repositorio:**
+   - Push código a GitHub (repo puede ser público)
+   - En Render/Railway: conectar el repo
+
+3. **Configurar variables de entorno:**
+   - En el dashboard de Render/Railway, agregar:
+     ```
+     DATABASE_URL=postgresql+asyncpg://...
+     ENVIRONMENT=production
+     API_KEY=<generar-nueva-clave>
+     DB_ADMIN_USER=administrador
+     DB_ADMIN_PASSWORD=<contraseña>
+     DB_APP_USER=app_user
+     DB_APP_PASSWORD=<contraseña>
+     ```
+
+4. **Deploy automático:**
+   - Render/Railway deploya automáticamente en cada push a main
+   - Acceder vía URL pública proporcionada
+
+**Generar nueva API_KEY:**
+```python
+import secrets
+api_key = secrets.token_urlsafe(32)
+print(api_key)
 ```
 
-Para más detalles, consulta [DOCKER.md](DOCKER.md).
+---
+
+## 🐳 Comandos Docker útiles
+
+```bash
+# Ver logs en tiempo real
+docker-compose logs -f app
+
+# Ejecutar comando en el contenedor
+docker-compose exec app bash
+
+# Reconstruir imagen
+docker-compose build
+
+# Limpiar todo
+docker-compose down -v
+```
 
 ---
 
@@ -412,18 +471,26 @@ TripEntry (Entrada de Diario)
 
 ## 🛠️ Variables de entorno
 
+Ver `.env.example` para todas las variables disponibles.
+
+**Variables requeridas:**
+
 ```env
 # Base de datos
 DATABASE_URL=postgresql+asyncpg://usuario:password@localhost:5432/name_db
 
+# Credenciales de BD (para inicialización)
+DB_ADMIN_USER=administrador
+DB_ADMIN_PASSWORD=contraseña-admin
+DB_APP_USER=app_user
+DB_APP_PASSWORD=contraseña-app
+
 # Configuración
 ENVIRONMENT=development          # development | production
-API_KEY=tu-clave-secreta-aqui
-
-# Opcional
-LOG_LEVEL=info
-DEBUG=true
+API_KEY=tu-clave-secreta-aqui   # Generar con: python -c "import secrets; print(secrets.token_urlsafe(32))"
 ```
+
+**Importante:** Nunca subir `.env` al repositorio. Usar `.env.example` como referencia.
 
 ---
 

@@ -43,15 +43,6 @@ CREATE TABLE travel.trip_entry (
     created_at TIMESTAMP
 );
 
--- Fotos
-CREATE TABLE travel.photo (
-    id SERIAL PRIMARY KEY,
-    trip_entry_id INTEGER REFERENCES travel.trip_entry(id) ON DELETE CASCADE,
-    url TEXT NOT NULL,
-    caption TEXT,
-    uploaded_at TIMESTAMP
-);
-
 -- Lugares visitados (NUEVA VERSIÓN NORMALIZADA)
 CREATE TABLE travel.country (
     id SERIAL PRIMARY KEY,
@@ -65,24 +56,6 @@ CREATE TABLE travel.city (
     lat FLOAT,
     lng FLOAT,
     UNIQUE (name, country_id)
-);
-
-CREATE TABLE travel.place_visited (
-    id SERIAL PRIMARY KEY,
-    trip_id INTEGER REFERENCES travel.trip(id) ON DELETE CASCADE,
-    country_id INTEGER REFERENCES travel.country(id) ON DELETE CASCADE,
-    city_id INTEGER REFERENCES travel.city(id) ON DELETE CASCADE
-);
-
--- Lista de deseos (normalizada)
-CREATE TABLE travel.whislist (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES travel.appuser(id) ON DELETE CASCADE,
-    title TEXT,
-    note TEXT,
-    country_id INTEGER REFERENCES travel.country(id) ON DELETE CASCADE,
-    city_id INTEGER REFERENCES travel.city(id) ON DELETE CASCADE,
-    priority INTEGER
 );
 
 -- Etiquetas

@@ -3,7 +3,6 @@
 -- ============================================
 -- Este script asigna permisos específicos a:
 -- - app_user: usuario principal de la aplicación
--- - alexst, turidev: usuarios específicos para casos concretos
 -- Se ejecuta DESPUÉS de crear el esquema y las tablas
 
 -- ============================================
@@ -25,11 +24,8 @@ GRANT SELECT ON ALL TABLES IN SCHEMA travel TO app_user;
 GRANT INSERT, UPDATE, DELETE ON travel.appuser TO app_user;
 GRANT INSERT, UPDATE, DELETE ON travel.trip TO app_user;
 GRANT INSERT, UPDATE, DELETE ON travel.trip_entry TO app_user;
-GRANT INSERT, UPDATE, DELETE ON travel.photo TO app_user;
-GRANT INSERT, UPDATE, DELETE ON travel.place_visited TO app_user;
 GRANT INSERT, UPDATE, DELETE ON travel.country TO app_user;
 GRANT INSERT, UPDATE, DELETE ON travel.city TO app_user;
-GRANT INSERT, UPDATE, DELETE ON travel.whislist TO app_user;
 GRANT INSERT, UPDATE, DELETE ON travel.tag TO app_user;
 GRANT INSERT, UPDATE, DELETE ON travel.trip_tag TO app_user;
 
