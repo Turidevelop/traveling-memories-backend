@@ -93,19 +93,3 @@ async def init_database() -> None:
         logger.error(f"❌ Error en init_database: {e}")
         raise
 
-
-def init_database_sync() -> None:
-    """
-    Versión síncrona de init_database para eventos de startup de FastAPI.
-    
-    Se llama desde app/main.py en el evento @app.on_event("startup")
-    """
-    import asyncio
-    
-    try:
-        asyncio.run(init_database())
-    except Exception as e:
-        logger.error(f"❌ Fallo en inicialización de BD: {e}")
-        # En desarrollo, puedes hacer raise aquí
-        # En producción, probablemente quieras que la app inicie de todas formas
-        # pero con logs claros del error
