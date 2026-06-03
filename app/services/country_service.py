@@ -21,5 +21,14 @@ class CountryService:
             return None
         return CountryOut.model_validate(country)
 
+    async def update_country(self, country_id: int, data: CountryCreate) -> CountryOut | None:
+        country = await self.repo.update_country(country_id, data.model_dump())
+        if country is None:
+            return None
+        return CountryOut.model_validate(country)
+
+    async def delete_country(self, country_id: int) -> bool:
+        return await self.repo.delete_country(country_id)
+
 async def get_country_service(repo: CountryRepo = Depends(get_country_repo)) -> CountryService:
     return CountryService(repo)

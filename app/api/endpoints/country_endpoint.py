@@ -53,3 +53,39 @@ async def get_country_by_id(
         raise HTTPException(status_code=404, detail="Country not found")
     return country
 
+@router.put(
+    "/{country_id}",
+    response_model=CountryOut
+)
+async def update_country(
+    country_id: int,
+    data: CountryCreate,
+    service: CountryService = Depends(get_country_service)
+) -> CountryOut:
+    """
+    Update a country by its ID.
+    """
+    updated_country = await service.update_country(country_id, data)
+    if updated_country is None:
+        raise HTTPException(status_code=404, detail="Country not found")
+    return updated_country
+
+@router.delete(
+    "/{country_id}",
+    status_code=status.HTTP_204_NO_CONTENT
+)
+async def delete_country(
+    country_id: int,
+    service: CountryService = Depends(get_country_service)
+) -> None:
+    """
+    Delete a country by its ID.
+    """
+    deleted = await service.delete_country(country_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Country not found")
+    country = await service.get_country_by_id(country_id)
+    if country is None:
+        raise HTTPException(status_code=404, detail="Country not found")
+    return country
+

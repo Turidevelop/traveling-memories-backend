@@ -51,3 +51,38 @@ async def get_city_by_id(
     if city is None:
         raise HTTPException(status_code=404, detail="City not found")
     return city
+
+@router.put(
+    "/{city_id}",
+    response_model=CityOut
+)
+async def update_city(
+    city_id: int,
+    data: CityCreate,
+    service: CityService = Depends(get_city_service)
+) -> CityOut:
+    """
+    Update a city by its ID.
+    """
+    updated_city = await service.update_city(city_id, data)
+    if updated_city is None:
+        raise HTTPException(status_code=404, detail="City not found")
+    return updated_city
+
+@router.delete(
+    "/{city_id}",
+    status_code=status.HTTP_204_NO_CONTENT
+)
+async def delete_city(
+    city_id: int,
+    service: CityService = Depends(get_city_service)
+) -> None:
+    """
+    Delete a city by its ID.
+    """
+    deleted = await service.delete_city(city_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="City not found")
+    if city is None:
+        raise HTTPException(status_code=404, detail="City not found")
+    return city

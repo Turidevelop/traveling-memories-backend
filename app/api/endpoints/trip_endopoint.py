@@ -39,3 +39,48 @@ async def get_trip_by_id(
     if trip is None:
         raise HTTPException(status_code=404, detail="Trip not found")
     return trip
+
+@router.get(
+    "/user/{user_id}",
+    response_model=list[TripOut]
+)
+async def get_trips_by_user_id(
+    user_id: int,
+    service: TripService = Depends(get_trip_service)
+) -> list[TripOut]:
+    """
+    Get all trips for a specific user.
+    """
+    return await service.get_trips_by_user_id(user_id)
+
+@router.put(
+    "/{trip_id}",
+    response_model=TripOut
+)
+async def update_trip(
+    trip_id: int,
+    trip: TripCreate,
+    service: TripService = Depends(get_trip_service)
+) -> TripOut:
+    """
+    Update a trip by its ID.
+    """
+    updated_trip = await service.update_trip(trip_id, trip)
+    if updated_trip is None:
+        raise HTTPException(status_code=404, detail="Trip not found")
+    return updated_trip
+
+@router.delete(
+    "/{trip_id}",
+    status_code=status.HTTP_204_NO_CONTENT
+)
+async def delete_trip(
+    trip_id: int,
+    service: TripService = Depends(get_trip_service)
+) -> None:
+    """
+    Delete a trip by its ID.
+    """
+    deleted = await service.delete_trip(trip_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Trip not found")

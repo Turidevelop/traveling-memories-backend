@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, update, delete
 from app.core.models import TripEntry
 from fastapi import Depends
 from app.database import get_db
@@ -28,6 +28,18 @@ class TripEntryRepo:
         stmt = select(TripEntry).where(TripEntry.trip_id == trip_id)
         result = await self.db.execute(stmt)
         return result.scalars().all()
+
+    async def update_trip_entry(self, entry_id: int, entry_data: dict) -> TripEntry | None:
+        stmt = update(TripEntry).where(TripEntry.id == entry_id).values(**entry_data).returning(TripEntry)
+        result = await self.db.execute(stmt)
+        await self.db.commit()
+        return result.scalar_one_or_none()
+
+    async def delete_trip_entry(self, entry_id: int) -> bool:
+        stmt = delete(TripEntry).where(TripEntry.id == entry_id)
+        result = await self.db.execute(stmt)
+        await self.db.commit()
+        return result.rowcount > 0
 
 async def get_trip_entry_repo(db: AsyncSession = Depends(get_db)) -> TripEntryRepo:
     """

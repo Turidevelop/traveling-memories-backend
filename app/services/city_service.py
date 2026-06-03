@@ -7,7 +7,6 @@ class CityService:
     def __init__(self, repo: CityRepo):
         self.repo = repo
 
-
     async def create_city(self, data: CityCreate) -> CityOut:
         obj = await self.repo.create_city(data.model_dump())
         return CityOut.model_validate(obj)
@@ -21,6 +20,15 @@ class CityService:
         if city is None:
             return None
         return CityOut.model_validate(city)
+
+    async def update_city(self, city_id: int, data: CityCreate) -> CityOut | None:
+        city = await self.repo.update_city(city_id, data.model_dump())
+        if city is None:
+            return None
+        return CityOut.model_validate(city)
+
+    async def delete_city(self, city_id: int) -> bool:
+        return await self.repo.delete_city(city_id)
 
 async def get_city_service(repo: CityRepo = Depends(get_city_repo)) -> CityService:
     return CityService(repo)

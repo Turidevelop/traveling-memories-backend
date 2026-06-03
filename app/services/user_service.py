@@ -19,3 +19,12 @@ class UserService:
         if user:
             return UserOut.model_validate(user)
         return None
+
+    async def update_user(self, user_id: int, user_data: dict) -> Optional[UserOut]:
+        user = await self.repo.update_user(user_id, user_data)
+        if user:
+            return UserOut.model_validate(user)
+        return None
+
+    async def delete_user(self, user_id: int) -> bool:
+        return await self.repo.delete_user(user_id)

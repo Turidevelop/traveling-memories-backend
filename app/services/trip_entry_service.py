@@ -24,6 +24,15 @@ class TripEntryService:
         entries = await self.repo.get_trip_entries_by_trip_id(trip_id)
         return [TripEntryOut.model_validate(entry) for entry in entries]
 
+    async def update_trip_entry(self, entry_id: int, entry: TripEntryCreate) -> TripEntryOut | None:
+        entry_obj = await self.repo.update_trip_entry(entry_id, entry.model_dump())
+        if entry_obj is None:
+            return None
+        return TripEntryOut.model_validate(entry_obj)
+
+    async def delete_trip_entry(self, entry_id: int) -> bool:
+        return await self.repo.delete_trip_entry(entry_id)
+
 def get_trip_entry_service(
     repo: TripEntryRepo = Depends(get_trip_entry_repo),
 ) -> TripEntryService:

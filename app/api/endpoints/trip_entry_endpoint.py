@@ -63,3 +63,35 @@ async def get_trip_entries_by_trip_id(
     Get all trip entries for a specific trip.
     """
     return await service.get_trip_entries_by_trip_id(trip_id)
+
+@router.put(
+    "/{entry_id}",
+    response_model=TripEntryOut
+)
+async def update_trip_entry(
+    entry_id: int,
+    entry: TripEntryCreate,
+    service: TripEntryService = Depends(get_trip_entry_service)
+) -> TripEntryOut:
+    """
+    Update a trip entry by its ID.
+    """
+    updated_entry = await service.update_trip_entry(entry_id, entry)
+    if updated_entry is None:
+        raise HTTPException(status_code=404, detail="Trip entry not found")
+    return updated_entry
+
+@router.delete(
+    "/{entry_id}",
+    status_code=status.HTTP_204_NO_CONTENT
+)
+async def delete_trip_entry(
+    entry_id: int,
+    service: TripEntryService = Depends(get_trip_entry_service)
+) -> None:
+    """
+    Delete a trip entry by its ID.
+    """
+    deleted = await service.delete_trip_entry(entry_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Trip entry not found")
