@@ -1,3 +1,5 @@
+from unittest import result
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.models import Trip
 from sqlalchemy import insert, select, update, delete
@@ -10,10 +12,16 @@ class TripRepo:
     def __init__(self, db: AsyncSession):
         self.db = db
 
+    
     async def create_trip(self, trip_data: dict) -> Trip:
-        stmt = insert(Trip).values(**trip_data).returning(Trip)
+        stmt = insert(Trip).values(**trip_data).returning(Trip.id)
         result = await self.db.execute(stmt)
         await self.db.commit()
+        new_id = result.scalar_one()
+    
+        # Ahora hacemos un SELECT para traer el objeto completo
+        select_stmt = select(Trip).where(Trip.id == new_id)
+        result = await self.db.execute(select_stmt)
         return result.scalar_one()
 
     async def get_trip_by_id(self, trip_id: int) -> Trip | None:
@@ -27,10 +35,16 @@ class TripRepo:
         return result.scalars().all()
 
     async def update_trip(self, trip_id: int, trip_data: dict) -> Trip | None:
-        stmt = update(Trip).where(Trip.id == trip_id).values(**trip_data).returning(Trip)
+        stmt = update(Trip).where(Trip.id == trip_id).values(**trip_data).returning(Trip.id)
         result = await self.db.execute(stmt)
         await self.db.commit()
-        return result.scalar_one_or_none()
+        updated_id = result.scalar_one_or_none()
+        if updated_id is None:
+            return None
+    
+        select_stmt = select(Trip).where(Trip.id == updated_id)
+        result = await self.db.execute(select_stmt)
+        return result.scalar_one()
 
     async def delete_trip(self, trip_id: int) -> bool:
         stmt = delete(Trip).where(Trip.id == trip_id)
