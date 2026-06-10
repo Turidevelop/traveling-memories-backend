@@ -70,23 +70,11 @@ async def update_trip(
         raise HTTPException(status_code=404, detail="Trip not found")
     return updated_trip
 
-@router.delete(
-    "/{trip_id}",
-    status_code=status.HTTP_204_NO_CONTENT
-)
+@router.delete("/{trip_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_trip(
     trip_id: int,
     service: TripService = Depends(get_trip_service)
 ) -> None:
-    """
-    Delete a trip by its ID.
-    """
-    deleted = await service.delete_trip(trip_id)
-    if not deleted:
-        raise HTTPException(status_code=404, detail="Trip not found")
-    """
-    Delete a trip by its ID.
-    """
     deleted = await service.delete_trip(trip_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Trip not found")

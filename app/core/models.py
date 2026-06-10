@@ -1,5 +1,10 @@
+
+from datetime import datetime
+
 from sqlalchemy import Integer, Float, String, Text, Date, ForeignKey, TIMESTAMP, Boolean
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.dialects.postgresql import ARRAY
+
 
 class Base(DeclarativeBase):
     pass
@@ -28,15 +33,18 @@ class Trip(Base):
     is_wishlist: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[str | None] = mapped_column(TIMESTAMP, nullable=True)
 
+
 class TripEntry(Base):
     __tablename__ = "trip_entry"
     __table_args__ = {"schema": "travel"}
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    trip_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.trip.id"), nullable=False)
-    entry_date: Mapped[Date] = mapped_column(Date, nullable=False)
-    title: Mapped[str] = mapped_column(String(255), nullable=False)
-    content: Mapped[str] = mapped_column(Text, nullable=False)
+    trip_id: Mapped[int] = mapped_column(Integer, ForeignKey("travel.trip.id"), nullable=True)
+    title: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    text_trip: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime | None] = mapped_column(TIMESTAMP, nullable=True)
+    photo_urls: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list, nullable=False)
 
 
 
