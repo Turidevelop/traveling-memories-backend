@@ -18,7 +18,13 @@ engine = create_async_engine(
     max_overflow=10,
 )
 
-SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
+SessionLocal = async_sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine,
+    class_=AsyncSession,
+    expire_on_commit=False,   # evita que los objetos se expiren tras commit
+)
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
