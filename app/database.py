@@ -7,8 +7,19 @@ from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from app.core.config import settings
 
-engine = create_async_engine(str(settings.DATABASE_URL), echo=False, future=True, connect_args={"ssl": "require"})
+engine = create_async_engine(
+    str(settings.DATABASE_URL),
+    echo=False,
+    future=True,
+    connect_args={"ssl": "require"},
+    pool_pre_ping=True,      # verifica que la conexión esté viva antes de usarla
+    pool_recycle=300,        # recicla conexiones cada 5 min (antes de que Neon las cierre)
+    pool_size=5,
+    max_overflow=10,
+)
+
 SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
+
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """
