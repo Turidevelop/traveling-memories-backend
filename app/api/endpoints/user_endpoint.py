@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from app.services.user_service import UserService
 from app.core.schemas import UserOut
-from app.core.security import validate_api_key
+from app.core.security import require_auth
 
 router = APIRouter(
     prefix="/users",
     tags=["Users"],
-    dependencies=[Depends(validate_api_key)]
+    dependencies=[Depends(require_auth)]
 )
 
 @router.get("", response_model=dict)

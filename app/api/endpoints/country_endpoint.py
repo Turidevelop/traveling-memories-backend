@@ -3,12 +3,12 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from app.core.schemas import CountryCreate, CountryOut
 from app.services.country_service import CountryService, get_country_service
 from typing import List
-from app.core.security import validate_api_key
+from app.core.security import require_auth
 
 router = APIRouter(
     prefix="/countries",
     tags=["Countries"],
-    dependencies=[Depends(validate_api_key)]
+    dependencies=[Depends(require_auth)]
 )
 
 @router.post(

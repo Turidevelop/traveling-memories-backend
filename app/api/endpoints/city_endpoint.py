@@ -2,12 +2,12 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from app.core.schemas import CityCreate, CityOut
 from app.services.city_service import CityService, get_city_service
 from typing import List
-from app.core.security import validate_api_key
+from app.core.security import require_auth
 
 router = APIRouter(
     prefix="/cities",
     tags=["Cities"],
-    dependencies=[Depends(validate_api_key)]
+    dependencies=[Depends(require_auth)]
 )
 
 @router.post(

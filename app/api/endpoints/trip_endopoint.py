@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from app.core.schemas import TripCreate, TripOut
 from app.services.trip_service import TripService, get_trip_service
-from app.core.security import validate_api_key
+from app.core.security import require_auth
 
 
 router = APIRouter(
     prefix="/trips",
     tags=["Trips"],
-    dependencies=[Depends(validate_api_key)]
+    dependencies=[Depends(require_auth)]
 )
 
 @router.post(
