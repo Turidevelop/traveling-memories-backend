@@ -19,7 +19,7 @@ app = FastAPI(lifespan=lifespan)
 # ── CORS ─────────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://traveling-memories.vercel.app","https://www.travelingmemories.eu/","http://localhost:4200"],          # en producción cambia esto por tu dominio frontend
+    allow_origins=["https://traveling-memories.vercel.app","https://www.travelingmemories.eu","http://localhost:4200"],          # en producción cambia esto por tu dominio frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
