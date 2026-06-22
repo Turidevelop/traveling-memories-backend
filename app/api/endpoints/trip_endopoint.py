@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status, HTTPException
 from app.core.schemas import TripCreate, TripOut
 from app.services.trip_service import TripService, get_trip_service
-from app.core.security import require_auth
+from app.core.security import require_auth, get_current_user_id
 
 
 router = APIRouter(
@@ -53,19 +53,14 @@ async def get_trip_by_id(
         raise HTTPException(status_code=404, detail="Trip not found")
     return trip
 
-@router.put(
-    "/{trip_id}",
-    response_model=TripOut
-)
+@router.put("/{trip_id}", response_model=TripOut)
 async def update_trip(
     trip_id: int,
     trip: TripCreate,
-    service: TripService = Depends(get_trip_service)
+    service: TripService = Depends(get_trip_service),
+    current_user_id: int = Depends(get_current_user_id)
 ) -> TripOut:
-    """
-    Update a trip by its ID.
-    """
-    updated_trip = await service.update_trip(trip_id, trip)
+    updated_trip = await service.update_trip(trip_id, trip, current_user_id)
     if updated_trip is None:
         raise HTTPException(status_code=404, detail="Trip not found")
     return updated_trip
@@ -73,8 +68,9 @@ async def update_trip(
 @router.delete("/{trip_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_trip(
     trip_id: int,
-    service: TripService = Depends(get_trip_service)
+    service: TripService = Depends(get_trip_service),
+    current_user_id: int = Depends(get_current_user_id)
 ) -> None:
-    deleted = await service.delete_trip(trip_id)
+    deleted = await service.delete_trip(trip_id, current_user_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Trip not found")
